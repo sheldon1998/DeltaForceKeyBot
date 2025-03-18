@@ -1,0 +1,48 @@
+{
+    "keys": [
+      {
+        "name": "巴别塔供电权限卡",
+        "base_price": 489859,
+        "ideal_price": 500000,
+        "position": [0.6148,0.5174],
+        "wantBuy":1
+      },
+      {
+        "name": "1号审讯室",
+        "base_price": 889019,
+        "ideal_price": 960000,
+        "position": [0.8641,0.5014],
+        "wantBuy":0
+      },{
+        "name": "医疗会议室",
+        "base_price": 1130221,
+        "ideal_price": 1240000,
+        "position": [0.3332,0.4924],
+        "wantBuy":0
+      },{
+        "name": "Relink植入手术室",
+        "base_price": 1550585,
+        "ideal_price": 1550585,
+        "position": [0.3617,0.3778],
+        "wantBuy":0
+      },{
+        "name": "总裁会议室",
+        "base_price": 2686739,
+        "ideal_price": 2680000,
+        "position": [0.5871, 0.2069],
+        "wantBuy":1
+      },{
+        "name": "地下金库储藏间",
+        "base_price": 2893131,
+        "ideal_price": 2900000,
+        "position": [0.368, 0.2229],
+        "wantBuy":0
+      },{
+        "name": "旅店用餐间",
+        "base_price": 2072018,
+        "ideal_price": 2100000,
+        "position": [0.798,0.2111],
+        "wantBuy":0
+      }
+    ]
+  }
