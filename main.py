@@ -79,7 +79,7 @@ def getCardName():
     region = (region_left, region_top, region_width, region_height)
     
     screenshot = take_screenshot(region=region, threshold=100)
-    
+    screenshot.save("./s.png")
     text = pytesseract.image_to_string(screenshot, lang='chi_sim', config="--psm 10")
     text = text.replace(" ", "").strip()  # 清理空格和换行符
     #print(f"提取的卡片名称: {text}")
@@ -93,7 +93,7 @@ def price_check_flow(card_info):
     position = card_info.get('position')
     pyautogui.moveTo(position[0]*screen_width, position[1]*screen_height)
     pyautogui.click()
-    time.sleep(0.1)
+    time.sleep(0.2)
     
     try:
         card_name = getCardName().strip()
@@ -103,7 +103,7 @@ def price_check_flow(card_info):
             pyautogui.press('esc')  # 按 Esc 取消
             return False
     except Exception as e:
-        print(f"获取卡片信息失败: {str(e)}")
+        print(f"获取门卡信息失败: {str(e)}")
         pyautogui.press('esc')  # 按 Esc 取消
         return False
     
@@ -113,7 +113,7 @@ def price_check_flow(card_info):
     premium = ((current_price / base_price) - 1) * 100
 
     check_card_name = card_info.get("name")
-    print(f"当前检查: {card_name} ,需要购买的卡:{check_card_name}")
+    print(f"当前门卡:{card_name}\n需要购买的卡:{check_card_name}")
     if card_name != check_card_name:
         pyautogui.press('esc')
         print("需要购买的卡与点击的卡不符，已返回上一层") 
@@ -156,7 +156,7 @@ def main():
     # 过滤出需要购买的卡牌
     cards_to_buy = [card for card in keys_config if card.get('wantBuy', 0) == 1]
     if not cards_to_buy:
-        print("没有需要购买的卡牌，程序退出")
+        print("没有需要购买的门卡，程序退出")
         return
     for card in cards_to_buy:
         print(f"当前需要购买: {card['name']}")
@@ -171,7 +171,7 @@ def main():
             for card_info in cards_to_buy:
                 if not is_running:
                     break
-                print(f"正在检查卡牌: {card_info['name']}")
+                print(f"正在检查门卡: {card_info['name']}")
                 if price_check_flow(card_info):
                     cards_to_buy.remove(card_info)
                     print(f"剩余购买队列：{cards_to_buy}")
