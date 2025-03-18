@@ -93,6 +93,7 @@ def price_check_flow(card_info):
     position = card_info.get('position')
     pyautogui.moveTo(position[0]*screen_width, position[1]*screen_height)
     pyautogui.click()
+    time.sleep(0.1)
     
     try:
         card_name = getCardName().strip()
