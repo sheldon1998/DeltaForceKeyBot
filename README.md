@@ -30,7 +30,7 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 ```
 python main.py
 ```
-F8开始抢卡,F9暂停抢卡,脚本已适配不同分辨率以及多显示器的场景
+F8开始抢卡,F9暂停抢卡,脚本已适配不同分辨率(16:9)以及多显示器的场景
 开始抢卡时需要将页面点击到买卡的区域,如下图项目默认只配置了交易行>钥匙>巴克什 页面如下图的的部分钥匙坐标数据,
 ![image](https://github.com/user-attachments/assets/b76727bc-d126-47a5-a3ed-964f9221d38c)
 
