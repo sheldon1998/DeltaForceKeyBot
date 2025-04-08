@@ -46,6 +46,8 @@ def take_screenshot(region, threshold):
     """截取指定区域的截图并二值化"""
     screenshot = pyautogui.screenshot(region=region)
     gray_image = screenshot.convert('L')
+    if threshold is None:
+        return gray_image
     binary_image = gray_image.point(lambda p: 255 if p > threshold else 0)
     binary_image = Image.eval(binary_image, lambda x: 255 - x)
     screenshot.close()
@@ -54,12 +56,13 @@ def take_screenshot(region, threshold):
 def getCardPrice():
     """获取当前卡片价格"""
     region_width = int(screen_width * 0.1)  # 区域宽度为屏幕宽度的 10%
-    region_height = int(screen_height * 0.05)  # 区域高度为屏幕高度的 10%
-    region_left = int(screen_width * 0.85)
-    region_top = int(screen_height * 0.80)
+    region_height = int(screen_height * 0.04)
+    region_left = int(screen_width * 0.152)  # 左上角最低价区域
+    region_top = int(screen_height * 0.152)
     region = (region_left, region_top, region_width, region_height)
     
-    image = take_screenshot(region=region, threshold=55)
+    image = take_screenshot(region=region, threshold=None)
+    image.save("./price.png")
     text = pytesseract.image_to_string(image, lang='eng', config="--psm 13 -c tessedit_char_whitelist=0123456789,")
     try:
         price = int(text.replace(",", "").strip())
