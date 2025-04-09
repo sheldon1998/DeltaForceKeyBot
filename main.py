@@ -72,7 +72,7 @@ def take_screenshot(region):
 
 def getCardPrice():
     """获取当前卡片价格"""
-    region_width = int(screen_width * 0.07)  # 区域宽度
+    region_width = int(screen_width * 0.1)  # 区域宽度
     region_height = int(screen_height * 0.05)  # 区域高度
     region_left = int(screen_width * 0.155) #截图左上角价格坐标
     region_top = int(screen_height * 0.15)
@@ -93,7 +93,7 @@ def getCardPrice():
 def getCardName():
     """获取当前卡片名称"""
     screen_width, screen_height = pyautogui.size()
-    region_width = int(screen_width * 0.07)  # 区域宽度
+    region_width = int(screen_width * 0.1)  # 区域宽度
     region_height = int(screen_height * 0.03)  # 区域高度
     region_left = int(screen_width * 0.768)
     region_top = int(screen_height * 0.145)
