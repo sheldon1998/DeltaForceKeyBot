@@ -10,7 +10,7 @@ import keyboard  # 用于监听键盘事件
 
 
 # 配置部分
-CONFIG_FILE = 'keys_fav.json'
+CONFIG_FILE = 'keys.json'
 
 # Tesseract 环境配置
 os.environ["LANGDATA_PATH"] = r"E:\Code\DeltaForce\tessdata-4.1.0\tessdata-4.1.0"
@@ -56,23 +56,30 @@ def take_screenshot(region):
     # 3. 转为灰度图
     gray = cv2.cvtColor(screenshot_bgr, cv2.COLOR_BGR2GRAY)
 
+    # 4. 去噪
+    denoised = cv2.fastNlMeansDenoising(
+        gray, 
+        h=15,
+        templateWindowSize=7,
+        searchWindowSize=21
+    )
     scale_percent = 200  # 放大200%
-    width = int(gray.shape[1] * scale_percent / 100)
-    height = int(gray.shape[0] * scale_percent / 100)
-    resized = cv2.resize(gray, (width, height), interpolation=cv2.INTER_CUBIC)
+    width = int(denoised.shape[1] * scale_percent / 100)
+    height = int(denoised.shape[0] * scale_percent / 100)
+    resized = cv2.resize(denoised, (width, height), interpolation=cv2.INTER_CUBIC)
 
     return resized
 
 def getCardPrice():
     """获取当前卡片价格"""
-    region_width = int(screen_width * 0.07)  # 截图区域宽度大小
-    region_height = int(screen_height * 0.05)  # 截图区域高度大小
+    region_width = int(screen_width * 0.07)  # 区域宽度
+    region_height = int(screen_height * 0.05)  # 区域高度
     region_left = int(screen_width * 0.155) #截图左上角价格坐标
     region_top = int(screen_height * 0.15)
     region = (region_left, region_top, region_width, region_height)
     
     screenshot = take_screenshot(region=region)
-    cv2.imwrite("./card_price.png", screenshot)
+    # cv2.imwrite("./card_price.png", screenshot) # 保存图片到本地
     text = pytesseract.image_to_string(screenshot, lang='eng', config="--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789,")
     
     try:
@@ -86,14 +93,14 @@ def getCardPrice():
 def getCardName():
     """获取当前卡片名称"""
     screen_width, screen_height = pyautogui.size()
-    region_width = int(screen_width * 0.07)  # 区域宽度为屏幕宽度的 10%
-    region_height = int(screen_height * 0.03)  # 区域高度为屏幕高度的 10%
+    region_width = int(screen_width * 0.07)  # 区域宽度
+    region_height = int(screen_height * 0.03)  # 区域高度
     region_left = int(screen_width * 0.768)
     region_top = int(screen_height * 0.145)
     region = (region_left, region_top, region_width, region_height)
     
     screenshot = take_screenshot(region=region)
-    cv2.imwrite("./card_name.png", screenshot)
+    # cv2.imwrite("./card_name.png", screenshot) #保存图片到本地
     text = pytesseract.image_to_string(screenshot, lang='chi_sim', config="--psm 10")
     text = text.replace(" ", "").strip()  # 清理空格和换行符
     print(f"提取的卡片名称: {text}")
