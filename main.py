@@ -1,14 +1,16 @@
 import json
 import pyautogui
+import cv2
+import numpy as np
 import time
-from PIL import Image
 import pytesseract
-import winsound
 import os
 import keyboard  # 用于监听键盘事件
 
+
+
 # 配置部分
-CONFIG_FILE = 'keys.json'
+CONFIG_FILE = 'keys_fav.json'
 
 # Tesseract 环境配置
 os.environ["LANGDATA_PATH"] = r"E:\Code\DeltaForce\tessdata-4.1.0\tessdata-4.1.0"
@@ -42,25 +44,37 @@ def load_keys_config():
         print(f"[错误] 读取配置时发生未知错误: {str(e)}")
         return []
 
-def take_screenshot(region, threshold):
+def take_screenshot(region):
     """截取指定区域的截图并二值化"""
+        # 1. 截取屏幕
     screenshot = pyautogui.screenshot(region=region)
-    gray_image = screenshot.convert('L')
-    binary_image = gray_image.point(lambda p: 255 if p > threshold else 0)
-    binary_image = Image.eval(binary_image, lambda x: 255 - x)
-    screenshot.close()
-    return binary_image
+    
+    # 2. 转换为OpenCV格式
+    screenshot_np = np.array(screenshot)
+    screenshot_bgr = cv2.cvtColor(screenshot_np, cv2.COLOR_RGB2BGR)
+    
+    # 3. 转为灰度图
+    gray = cv2.cvtColor(screenshot_bgr, cv2.COLOR_BGR2GRAY)
+
+    scale_percent = 200  # 放大200%
+    width = int(gray.shape[1] * scale_percent / 100)
+    height = int(gray.shape[0] * scale_percent / 100)
+    resized = cv2.resize(gray, (width, height), interpolation=cv2.INTER_CUBIC)
+
+    return resized
 
 def getCardPrice():
     """获取当前卡片价格"""
-    region_width = int(screen_width * 0.1)  # 区域宽度为屏幕宽度的 10%
-    region_height = int(screen_height * 0.05)  # 区域高度为屏幕高度的 10%
-    region_left = int(screen_width * 0.85)
-    region_top = int(screen_height * 0.80)
+    region_width = int(screen_width * 0.07)  # 截图区域宽度大小
+    region_height = int(screen_height * 0.05)  # 截图区域高度大小
+    region_left = int(screen_width * 0.155) #截图左上角价格坐标
+    region_top = int(screen_height * 0.15)
     region = (region_left, region_top, region_width, region_height)
     
-    image = take_screenshot(region=region, threshold=55)
-    text = pytesseract.image_to_string(image, lang='eng', config="--psm 13 -c tessedit_char_whitelist=0123456789,")
+    screenshot = take_screenshot(region=region)
+    cv2.imwrite("./card_price.png", screenshot)
+    text = pytesseract.image_to_string(screenshot, lang='eng', config="--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789,")
+    
     try:
         price = int(text.replace(",", "").strip())
         print(f"提取的价格文本: {price}")
@@ -72,17 +86,17 @@ def getCardPrice():
 def getCardName():
     """获取当前卡片名称"""
     screen_width, screen_height = pyautogui.size()
-    region_width = int(screen_width * 0.1)  # 区域宽度为屏幕宽度的 10%
-    region_height = int(screen_height * 0.05)  # 区域高度为屏幕高度的 10%
+    region_width = int(screen_width * 0.07)  # 区域宽度为屏幕宽度的 10%
+    region_height = int(screen_height * 0.03)  # 区域高度为屏幕高度的 10%
     region_left = int(screen_width * 0.768)
     region_top = int(screen_height * 0.145)
     region = (region_left, region_top, region_width, region_height)
     
-    screenshot = take_screenshot(region=region, threshold=100)
-    screenshot.save("./s.png")
+    screenshot = take_screenshot(region=region)
+    cv2.imwrite("./card_name.png", screenshot)
     text = pytesseract.image_to_string(screenshot, lang='chi_sim', config="--psm 10")
     text = text.replace(" ", "").strip()  # 清理空格和换行符
-    #print(f"提取的卡片名称: {text}")
+    print(f"提取的卡片名称: {text}")
     return text
 
 def price_check_flow(card_info):
@@ -93,7 +107,7 @@ def price_check_flow(card_info):
     position = card_info.get('position')
     pyautogui.moveTo(position[0]*screen_width, position[1]*screen_height)
     pyautogui.click()
-    time.sleep(0.2)
+    time.sleep(0.1)
     
     try:
         card_name = getCardName().strip()
@@ -145,6 +159,8 @@ def stop_loop():
     print("循环已停止")
 
 def main():
+    # getCardPrice() #debug的时候使用
+    # getCardName() #debug的时候使用
     global is_running, is_paused
     
     # 初始化时加载配置
